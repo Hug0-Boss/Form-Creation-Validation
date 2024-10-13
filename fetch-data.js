@@ -1,30 +1,34 @@
-document.addEventListener("DOMContentLoaded", async function () {
-    const apiDataDiv = document.getElementById("api-data");
+// Define an asynchronous function to fetch user data
+async function fetchUserData() {
+    const apiUrl = 'https://jsonplaceholder.typicode.com/users'; // Define the API URL
+    const dataContainer = document.getElementById('api-data'); // Select the data container
 
     try {
-        // Fetch user data from the public API
-        const response = await fetch("https://jsonplaceholder.typicode.com/users");
-        
-        // Check if the response is okay (status in the range 200-299)
-        if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
+        // Fetch data from the API
+        const response = await fetch(apiUrl);
+        const users = await response.json(); // Convert response to JSON
 
-        // Parse the JSON data
-        const users = await response.json();
-        
         // Clear the loading message
-        apiDataDiv.textContent = "";
+        dataContainer.innerHTML = '';
 
-        // Display each user's name
+        // Create a <ul> element to hold the user names
+        const userList = document.createElement('ul');
+
+        // Loop through each user and create a list item
         users.forEach(user => {
-            const userName = document.createElement("p");
-            userName.textContent = user.name; // Display user name
-            apiDataDiv.appendChild(userName); // Append to the div
+            const listItem = document.createElement('li'); // Create <li> for each user
+            listItem.textContent = user.name; // Set the user's name as text
+            userList.appendChild(listItem); // Append the <li> to the <ul>
         });
+
+        // Append the <ul> to the data container
+        dataContainer.appendChild(userList);
     } catch (error) {
-        // Handle errors
-        apiDataDiv.textContent = `Error fetching user data: ${error.message}`;
-        apiDataDiv.style.color = "red"; // Optional: change text color to indicate error
+        // Handle errors by displaying a failure message
+        dataContainer.innerHTML = ''; // Clear existing content
+        dataContainer.textContent = 'Failed to load user data.'; // Set error message
     }
-});
+}
+
+// Invoke fetchUserData when the DOM content is loaded
+document.addEventListener('DOMContentLoaded', fetchUserData);
